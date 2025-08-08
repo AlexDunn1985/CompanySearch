@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: ch-proxy-secure
+    env: node
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    plan: free
+    envVars:
+      - key: CH_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: SHARED_SECRET
+        sync: false
+      - key: AUTH_HEADER
+        value: x-ch-secret
