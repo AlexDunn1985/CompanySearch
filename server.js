@@ -116,5 +116,25 @@ app.get('/companies-house/:number/officers', async (req, res) => {
   }
 });
 
+/** Companies House: get company details (for status etc) */
+app.get('/companies-house/:number', async (req, res) => {
+  const number = (req.params.number || '').toString();
+  if (!number) return res.status(400).json({ error: 'No company number' });
+  try {
+    const r = await fetch(`${CH_BASE}/company/${encodeURIComponent(number)}`, {
+      headers: { 'Authorization': 'Basic ' + Buffer.from(CH_API_KEY + ':').toString('base64') }
+    });
+    if (!r.ok) {
+      const text = await r.text();
+      return res.status(r.status).json({ error: 'CH error', detail: text });
+    }
+    const data = await r.json();
+    res.json(data);
+  } catch (e) {
+    console.error('CH details failed', e);
+    res.status(500).json({ error: 'Failed to fetch company details' });
+  }
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log('CH proxy (secure) running on :' + port));
